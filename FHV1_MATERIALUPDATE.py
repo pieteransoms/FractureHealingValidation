@@ -29,7 +29,12 @@ for tissueComposition in tissueCompositions:                                    
             sectionName=tissueComposition.replace('.',''), thicknessAssignment=FROM_SECTION)
 
 ###write results
-resultsSheet.write(day, 2, str(sum((np.ones(numberCallusElements)-callusProperties[:, 2]-callusProperties[:, 3]-callusProperties[:, 4])*callusElemVolumes)/sum(callusElemVolumes)))
-resultsSheet.write(day, 3, str(sum(callusProperties[:, 2]*callusElemVolumes)/sum(callusElemVolumes)))
-resultsSheet.write(day, 4, str(sum(callusProperties[:, 3]*callusElemVolumes)/sum(callusElemVolumes)))
-resultsSheet.write(day, 5, str(sum(callusProperties[:, 4]*callusElemVolumes)/sum(callusElemVolumes)))
+resultsSheet.write(day,  2, str(sum(callusProperties[intercorticalElementLabels-1, 2]*callusElemVolumes[intercorticalElementLabels-1])/sum(callusElemVolumes[intercorticalElementLabels-1]))) #intercorticalSoftCartConc
+resultsSheet.write(day,  3, str(sum(callusProperties[intercorticalElementLabels-1, 3]*callusElemVolumes[intercorticalElementLabels-1])/sum(callusElemVolumes[intercorticalElementLabels-1]))) #intercorticalMnrlCartConc
+resultsSheet.write(day,  4, str(sum(callusProperties[intercorticalElementLabels-1, 4]*callusElemVolumes[intercorticalElementLabels-1])/sum(callusElemVolumes[intercorticalElementLabels-1]))) #intercorticalWovBoneConc
+resultsSheet.write(day,  5, str(sum(callusProperties[periostealElementLabels-1, 2]*callusElemVolumes[periostealElementLabels-1])/sum(callusElemVolumes[periostealElementLabels-1]))) #periostealSoftCartConc
+resultsSheet.write(day,  6, str(sum(callusProperties[periostealElementLabels-1, 3]*callusElemVolumes[periostealElementLabels-1])/sum(callusElemVolumes[periostealElementLabels-1]))) #periostealMnrlCartConc
+resultsSheet.write(day,  7, str(sum(callusProperties[periostealElementLabels-1, 4]*callusElemVolumes[periostealElementLabels-1])/sum(callusElemVolumes[periostealElementLabels-1]))) #periostealWovBoneConc
+resultsSheet.write(day,  8, str(sum(callusProperties[endostealElementLabels-1, 2]*callusElemVolumes[endostealElementLabels-1])/sum(callusElemVolumes[endostealElementLabels-1]))) #endostealSoftCartConc
+resultsSheet.write(day,  9, str(sum(callusProperties[endostealElementLabels-1, 3]*callusElemVolumes[endostealElementLabels-1])/sum(callusElemVolumes[endostealElementLabels-1]))) #endostealMnrlCartConc
+resultsSheet.write(day, 10, str(sum(callusProperties[endostealElementLabels-1, 4]*callusElemVolumes[endostealElementLabels-1])/sum(callusElemVolumes[endostealElementLabels-1]))) #endostealWovBoneConc

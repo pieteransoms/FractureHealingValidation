@@ -24,9 +24,9 @@ part['BonePart'].SectionAssignment(offset=0.0, offsetField='', offsetType=MIDDLE
     thicknessAssignment=FROM_SECTION)
 tissueCompositions = [
     'softCart{:.2f}mnrlCart{:.2f}wovBone{:.2f}'.format(softCartConc/100.0, mnrlCartConc/100.0, wovBoneConc/100.0)
-    for softCartConc in range(0, 101, 1)
-    for mnrlCartConc in range(0, 101, 1)
-    for wovBoneConc in range(0, 101, 1)
+    for softCartConc in range(0, 102, 2)
+    for mnrlCartConc in range(0, 102, 2)
+    for wovBoneConc in range(0, 102, 2)
     if softCartConc + mnrlCartConc + wovBoneConc <= 100  # Ensure the sum does not exceed 100
 ]
 for tissueComposition in tissueCompositions:
@@ -121,7 +121,6 @@ else:
     np.save(modelsMap + '/callusElemVolumes.npy', callusElemVolumes)
     toc = time.clock()
     print '--- makeCallusElemVolumes took ' + str(int(toc - tic)) + ' seconds'
-avgCallusElemVolume = np.average(callusElemVolumes)
 ###callusElemCenterCoords
 if 'callusElemCenterCoords.npy' in os.listdir(modelsMap):
     callusElemCenterCoords = np.load(modelsMap + '/callusElemCenterCoords.npy')

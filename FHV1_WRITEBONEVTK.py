@@ -18,21 +18,21 @@ modelsMap = 'I:/FractureHealingValidation/1/Models'
 # currWorkDir = os.getcwd()
 parametersFile = scriptsMap + '/FHV1_PARAMETERS.py'
 exec(open(parametersFile).read())
-if detail == 'Debug':
+if IFM == 'Debug':
     modelsMap = modelsMap + '/Debug'
-if detail == 'VeryRough':
+if IFM == 'VeryRough':
     modelsMap = modelsMap + '/VeryRough'
-elif detail == 'Rough':
+elif IFM == 'Rough':
     modelsMap = modelsMap + '/Rough'
-elif detail == 'Normal':
+elif IFM == 'Normal':
     modelsMap = modelsMap + '/Normal'
-elif detail == 'Fine':
+elif IFM == 'Fine':
     modelsMap = modelsMap + '/Fine'
-elif detail == 'VeryFine':
+elif IFM == 'VeryFine':
     modelsMap = modelsMap + '/VeryFine'
-elif detail == 'case A':
+elif IFM == 'case A':
     modelsMap = modelsMap + '/case A'
-elif detail == 'case B':
+elif IFM == 'case B':
     modelsMap = modelsMap + '/case B'
 
 ###load data and write to vtk file

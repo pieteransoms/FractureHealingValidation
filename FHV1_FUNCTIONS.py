@@ -22,6 +22,10 @@ makeCommonNodesCallusBone               -> commonNodesCallusBone                
 makeLoadingNodes                        -> loadingNodes                                                     performed once
 makeFixedNodes                          -> fixedNodes                                                       performed once
 
+makeIntercorticalElementLabels          -> intercorticalElementLabels                                       performed once
+makePeriostealElementLabels             -> periostealElementLabels                                          performed once
+makeEndostealElementLabels              -> endostealElementLabels                                           performed once
+
 updatePerfusion                         -> updatedPerfusion                                                 performed every iteration
 updateWovBoneConc                       -> updatedWovBoneConc                                               performed every iteration
 updateMnrlCartConc                      -> updatedMnrlCartConc                                              performed every iteration
@@ -141,10 +145,9 @@ def makeCallusElemPositioning(numberCallusElements, callusBoneContactNodes):
             callusElemPositioning[elementLabel-1, 1] = True
             # print elementLabel
     callusElemPositioning[:, 2] = np.array(np.sqrt(callusElemCenterCoords[:, 0]**2
-        + callusElemCenterCoords[:, 2]**2) < marrowRadius, dtype = bool)                                                #if centerCoords in range THEN interCortical
+        + callusElemCenterCoords[:, 2]**2) < marrowRadius, dtype = bool)                                                #if centerCoords in range THEN endoCortical
     callusElemPositioning[:, 3] = np.logical_and(callusElemPositioning[:, 1],
         np.array(np.absolute(callusElemCenterCoords[:, 1]) < fractureEndRegion), dtype = bool)                          #if boneContact and y value small enough, then fractureEndContact
-    # print np.array(np.where(callusElemPositioning[:, 3]))[0] + 1
 
 ###
 
@@ -297,6 +300,59 @@ def makeFixedNodes(boneNodeCoords):
 
 ###
 
+def makeIntercorticalElementLabels(callusElemCenterCoords):
+    global intercorticalElementLabels
+    '''
+    intercorticalElementLabels = [elementLabel1, elementLabel2, ..., elementLabel~]
+        length = numberIntercorticalElementLabels (not defined)
+        dtype = int
+    '''
+
+    radiusList = np.sqrt(callusElemCenterCoords[:, 0]**2 + callusElemCenterCoords[:, 2]**2)
+    elementsWithinRadius = np.array(np.where(radiusList < 8)[0], dtype = int) + 1
+    elementsOutsideRadius = np.array(np.where(radiusList > 6)[0], dtype = int) + 1
+    heightList = callusElemCenterCoords[:, 1]
+    if IFM == 'case A':
+        elementsWithinHeight = np.array(np.where(np.absolute(heightList) < 1.05)[0], dtype = int) + 1
+    elif IFM == 'case B':
+        elementsWithinHeight = np.array(np.where(np.absolute(heightList) < 1.65)[0], dtype = int) + 1
+    intercorticalElementLabels = np.intersect1d(np.intersect1d(elementsWithinRadius, elementsOutsideRadius), elementsWithinHeight)
+
+###
+
+def makePeriostealElementLabels(callusElemCenterCoords):
+    global periostealElementLabels
+    '''
+    periostealElementLabels = [elementLabel1, elementLabel2, ..., elementLabel~]
+        length = numberPeriostealElementLabels (not defined)
+        dtype = int
+    '''
+
+    radiusList = np.sqrt(callusElemCenterCoords[:, 0]**2 + callusElemCenterCoords[:, 2]**2)
+    elementsWithinRadius = np.array(np.where(radiusList < 13)[0], dtype = int) + 1
+    elementsOutsideRadius = np.array(np.where(radiusList > 8)[0], dtype = int) + 1
+    heightList = callusElemCenterCoords[:, 1]
+    elementsWithinHeight = np.array(np.where(np.absolute(heightList) < 3)[0], dtype = int) + 1
+    periostealElementLabels = np.intersect1d(np.intersect1d(elementsWithinRadius, elementsOutsideRadius), elementsWithinHeight)
+
+###
+
+def makeEndostealElementLabels(callusElemCenterCoords):
+    global endostealElementLabels
+    '''
+    endostealElementLabels = [elementLabel1, elementLabel2, ..., elementLabel~]
+        length = numberEndostealElementLabels (not defined)
+        dtype = int
+    '''
+
+    radiusList = np.sqrt(callusElemCenterCoords[:, 0]**2 + callusElemCenterCoords[:, 2]**2)
+    endostealElementLabels = np.array(np.where(radiusList < 6)[0], dtype = int) + 1                                       #former elementsWithinRadius
+    # heightList = callusElemCenterCoords[:, 1]
+    # elementsWithinHeight = np.array(np.where(np.absolute(heightList) < 1.5)[0], dtype = int) + 1
+    # endostealElementLabels = np.intersect1d(elementsWithinRadius, elementsWithinHeight)
+
+###
+
 def updatePerfusion(numberCallusElements, callusProperties, outputMatrix):
     global updatedPerfusion
     updatedPerfusion = np.maximum(np.zeros(numberCallusElements), 
@@ -339,18 +395,39 @@ def updateAdjPerfusion(numberCallusElements, callusProperties, callusElemElemCon
                                     # (callusElemElemConnectivity[:, :4] != 0).astype(int))                               #perfusion values of second neighbor elements
     # thirdNeighborPerfusionValues  = np.array(callusProperties[callusElemElemConnectivity[:, 29:]-1, 0] * 
                                     # (callusElemElemConnectivity[:, :4] != 0).astype(int))                               #perfusion values of third neighbor elements
-    if day < perfusionThroughMarrowTime:
-        adjPerfusionNotBoneContact = 0.3 * np.logical_and(callusElemPositioning[:, 0],                                  #adjPerfusionNotBoneContact = 0.3 if peripheral[:, 0] AND
-            np.logical_not(np.logical_or(callusElemPositioning[:, 1], callusElemPositioning[:, 2])))                    #       not (boneContact[:, 1] OR interCortical[:, 2])
-    else:
-        adjPerfusionNotBoneContact = 0.3 * np.logical_and(callusElemPositioning[:, 0], 
-            np.logical_not(callusElemPositioning[:, 1]))                                                                #adjPerfusionNotBoneContact = 0.3 if peripheral[:, 0] AND not boneContact[:, 1]
+
+    adjPerfusionSoftTiss = 0.3 * np.logical_and(callusElemPositioning[:, 0],                                            #adjPerfusionSoftTiss = 0.3 if peripheral[:, 0] AND
+        np.logical_not(np.logical_or(callusElemPositioning[:, 1], callusElemPositioning[:, 2])))                        #       not (boneContact[:, 1] OR endoCortical[:, 2])
+    adjPerfusionEndoCortical = min(0.9, (0.8/63.0*float(day) + 0.1)) * np.logical_and(
+        callusElemPositioning[:, 0], np.logical_and(np.logical_not(callusElemPositioning[:, 1]), 
+        callusElemPositioning[:, 2]))                                                                                   #adjPerfusionEndoCortical = 0.1/0.9 if peripheral[:, 0] AND not boneContact[:, 1] AND endoCortical[:, 2])
     adjPerfusionBoneContact = 1.0 * np.logical_and(callusElemPositioning[:, 1], 
         np.logical_not(callusElemPositioning[:, 3]))                                                                    #adjPerfusionBoneContact = 1 if boneContact[:, 1] AND not fractureEndContact[:, 3]
-    adjPerfusionPeripheral = adjPerfusionBoneContact + adjPerfusionNotBoneContact
+    adjPerfusionPeripheral = adjPerfusionBoneContact + adjPerfusionSoftTiss + adjPerfusionEndoCortical
     updatedAdjPerfusion = np.amax(np.concatenate((firstNeighborPerfusionValues, 
         #secondNeighborPerfusionValues * 0.75, thirdNeighborPerfusionValues * 0.5,
         np.reshape(adjPerfusionPeripheral, (numberCallusElements, 1))), axis = 1), axis=1)                              #maximum value of perfusion in an adjacent element
+
+# def updateAdjPerfusion(numberCallusElements, callusProperties, callusElemElemConnectivity, callusElemPositioning):
+#     global updatedAdjPerfusion
+#     firstNeighborPerfusionValues  = np.array(callusProperties[callusElemElemConnectivity[:, :4]-1, 0] * 
+#                                     (callusElemElemConnectivity[:, :4] != 0).astype(int))                               #perfusion values of first neighbor elements
+#     # secondNeighborPerfusionValues = np.array(callusProperties[callusElemElemConnectivity[:, 4:29]-1, 0] * 
+#                                     # (callusElemElemConnectivity[:, :4] != 0).astype(int))                               #perfusion values of second neighbor elements
+#     # thirdNeighborPerfusionValues  = np.array(callusProperties[callusElemElemConnectivity[:, 29:]-1, 0] * 
+#                                     # (callusElemElemConnectivity[:, :4] != 0).astype(int))                               #perfusion values of third neighbor elements
+#     if day < perfusionThroughMarrowTime:
+#         adjPerfusionNotBoneContact = 0.3 * np.logical_and(callusElemPositioning[:, 0],                                  #adjPerfusionNotBoneContact = 0.3 if peripheral[:, 0] AND
+#             np.logical_not(np.logical_or(callusElemPositioning[:, 1], callusElemPositioning[:, 2])))                    #       not (boneContact[:, 1] OR endoCortical[:, 2])
+#     else:
+#         adjPerfusionNotBoneContact = 0.3 * np.logical_and(callusElemPositioning[:, 0], 
+#             np.logical_not(callusElemPositioning[:, 1]))                                                                #adjPerfusionNotBoneContact = 0.3 if peripheral[:, 0] AND not boneContact[:, 1]
+#     adjPerfusionBoneContact = 1.0 * np.logical_and(callusElemPositioning[:, 1], 
+#         np.logical_not(callusElemPositioning[:, 3]))                                                                    #adjPerfusionBoneContact = 1 if boneContact[:, 1] AND not fractureEndContact[:, 3]
+#     adjPerfusionPeripheral = adjPerfusionBoneContact + adjPerfusionNotBoneContact
+#     updatedAdjPerfusion = np.amax(np.concatenate((firstNeighborPerfusionValues, 
+#         #secondNeighborPerfusionValues * 0.75, thirdNeighborPerfusionValues * 0.5,
+#         np.reshape(adjPerfusionPeripheral, (numberCallusElements, 1))), axis = 1), axis=1)                              #maximum value of perfusion in an adjacent element
 
 ###
 
@@ -367,9 +444,9 @@ def updateAdjWovBoneConc(numberCallusElements, callusProperties, callusElemElemC
 def updateCallusMaterialNames(callusProperties):                                                                        #softCart = softCartConc
     global updatedCallusMaterialNames                                                                                   #woveBone = mnrlCartConc + wovBoneConc
     #updatedCallusMaterialNames = ['softCartX.XXmnrlCartX.XXwovBoneX.XX']*numberCallusElements
-    roundedSoftCartConc = np.round(callusProperties[:, 2] / 0.02) * 0.02
-    roundedMnrlCartConc = np.round(callusProperties[:, 3] / 0.02) * 0.02
-    roundedWovBoneConc  = np.round(callusProperties[:, 4] / 0.02) * 0.02
+    roundedSoftCartConc = np.round(callusProperties[:, 2] / 0.01) * 0.01
+    roundedMnrlCartConc = np.round(callusProperties[:, 3] / 0.01) * 0.01
+    roundedWovBoneConc  = np.round(callusProperties[:, 4] / 0.01) * 0.01
     overshoot = np.maximum(roundedSoftCartConc + roundedMnrlCartConc + roundedWovBoneConc - np.ones(numberCallusElements), 
         np.zeros(numberCallusElements))                                                                                 #due to rounding, sum can be >1.0 (='overshoot')
     roundedSoftCartConc = np.absolute(np.round_(roundedSoftCartConc - overshoot, decimals=2))                           #this 'overshoot' is subtracted from roundedSoftCartConc

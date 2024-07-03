@@ -41,7 +41,7 @@ currWorkDir = os.getcwd()
 
 machine = socket.gethostname()
 if machine == 'SET-L-ME-B21009':                                                                                    #personal laptop
-    sys.path.insert(8, r'C:/SIMULIA/2020/EstProducts/win_b64/code/python2.7/lib/abaqus_plugins/findNearestNode')
+    sys.path.insert(8, r'C:/SIMULIA/EstProducts/2020/win_b64/code/python2.7/lib/abaqus_plugins/findNearestNode')
     sys.path.insert(8, r'C:/Program Files/MATLAB/R2021b/extern/engines/python/build/lib')
     sys.path.insert(8, r'C:/Users/u0144313/AppData/Local/anaconda3/Lib/site-packages')
 elif machine[4] == 'S':                                                                                             #VCL
@@ -57,37 +57,25 @@ import xlwt                                                                     
 Mdb()
 
 ###script files
-parametersFile = scriptsMap + '/FHV1_PARAMETERS.py'
+parametersFile      = scriptsMap + '/FHV1_PARAMETERS.py'
 writeParametersFile = scriptsMap + '/FHV1_WRITEPARAMETERS.py'
-modelFile = scriptsMap + '/FHV1_MODEL.py'
-functionsFile = scriptsMap + '/FHV1_FUNCTIONS.py'
-classesFile = scriptsMap + '/FHV1_CLASSES.py'
-loopFile = scriptsMap + '/FHV1_LOOP.py'
+modelFile           = scriptsMap + '/FHV1_MODEL.py'
+functionsFile       = scriptsMap + '/FHV1_FUNCTIONS.py'
+loopFile            = scriptsMap + '/FHV1_LOOP.py'
 fractureHealingFile = scriptsMap + '/FHV1_FRACTUREHEALING.py'
-strainsFile = scriptsMap + '/FHV1_STRAINS.py'
-materialUpdateFile = scriptsMap + '/FHV1_MATERIALUPDATE.py'
+strainsFile         = scriptsMap + '/FHV1_STRAINS.py'
+materialUpdateFile  = scriptsMap + '/FHV1_MATERIALUPDATE.py'
 
 ###parameters
 execfile(parametersFile)
 execfile(writeParametersFile)
 
 ###part files
-if detail == 'Debug':
-    modelsMap = modelsMap + '/Debug'
-if detail == 'VeryRough':
-    modelsMap = modelsMap + '/VeryRough'
-elif detail == 'Rough':
-    modelsMap = modelsMap + '/Rough'
-elif detail == 'Normal':
-    modelsMap = modelsMap + '/Normal'
-elif detail == 'Fine':
-    modelsMap = modelsMap + '/Fine'
-elif detail == 'VeryFine':
-    modelsMap = modelsMap + '/VeryFine'
-elif detail == 'case A':
-    modelsMap = modelsMap + '/case A'
-elif detail == 'case B':
+if IFM == 'case B':
     modelsMap = modelsMap + '/case B'
+else:
+    modelsMap = modelsMap + '/case A'
+
 boneFile = modelsMap + '/Bone.inp'
 callusFile = modelsMap + '/Callus.inp'
 
