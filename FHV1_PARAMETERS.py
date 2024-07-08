@@ -1,6 +1,6 @@
 ###healing parameters
 followUpTime = 70 #days
-useLinearSpring = False
+useLinearSpring = True
 kSpring = 100000.0 #N/mm
 IFM = 'case A'                                       #case A, case B, 0.0mm, 0.01mm, 0.1mm, 0.25mm, 0.5mm, 1.0mm, 1.25mm, 1.5mm or 2.0mm
 
@@ -44,5 +44,4 @@ if IFM == 'case A':
     fractureEndRegion = 1.05 + 2 #mm
 elif IFM == 'case B':
     fractureEndRegion = 1.55 + 2 #mm
-perfusionThroughMarrowTime = 10 #days               #perfusion through bone marrow starts later
-# callusRefElemVolume = 0.14 #mm^3                    #the tissue updates are scaled with refVolume/elemVolume to eliminate mesh dependency
+refCallusElemVolume = 0.07 #mm^3                    #the tissue updates are scaled with refCallusElemVolume/avgCallusElemVolume to eliminate mesh dependency

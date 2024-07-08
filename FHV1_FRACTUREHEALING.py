@@ -18,7 +18,7 @@ if fuzzyModel == 'Ansoms_v04':
 
 ###scaling outputMatrix to accomodate for mesh size
 callusRefVolume = 0.07                                                                                                              #average value for normal mesh size is 0.03812, for rough mesh size is 0.07
-scaleFactor = np.cbrt(0.07/avgCallusElemVolume)
+scaleFactor = np.cbrt(refCallusElemVolume/avgCallusElemVolume)
 outputMatrix[:, 0] = scaleFactor * outputMatrix[:, 0]
 outputMatrix[:, 3] = scaleFactor * outputMatrix[:, 3]
 

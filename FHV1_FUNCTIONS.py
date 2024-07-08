@@ -444,9 +444,9 @@ def updateAdjWovBoneConc(numberCallusElements, callusProperties, callusElemElemC
 def updateCallusMaterialNames(callusProperties):                                                                        #softCart = softCartConc
     global updatedCallusMaterialNames                                                                                   #woveBone = mnrlCartConc + wovBoneConc
     #updatedCallusMaterialNames = ['softCartX.XXmnrlCartX.XXwovBoneX.XX']*numberCallusElements
-    roundedSoftCartConc = np.round(callusProperties[:, 2] / 0.01) * 0.01
-    roundedMnrlCartConc = np.round(callusProperties[:, 3] / 0.01) * 0.01
-    roundedWovBoneConc  = np.round(callusProperties[:, 4] / 0.01) * 0.01
+    roundedSoftCartConc = np.round(callusProperties[:, 2] / 0.02) * 0.02
+    roundedMnrlCartConc = np.round(callusProperties[:, 3] / 0.02) * 0.02
+    roundedWovBoneConc  = np.round(callusProperties[:, 4] / 0.02) * 0.02
     overshoot = np.maximum(roundedSoftCartConc + roundedMnrlCartConc + roundedWovBoneConc - np.ones(numberCallusElements), 
         np.zeros(numberCallusElements))                                                                                 #due to rounding, sum can be >1.0 (='overshoot')
     roundedSoftCartConc = np.absolute(np.round_(roundedSoftCartConc - overshoot, decimals=2))                           #this 'overshoot' is subtracted from roundedSoftCartConc
