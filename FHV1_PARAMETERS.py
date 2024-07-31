@@ -1,10 +1,11 @@
 ###healing parameters
 followUpTime = 70 #days
 useLinearSpring = True
-kSpring = 100000.0 #N/mm
-IFM = 'case A'                                       #case A, case B, 0.0mm, 0.01mm, 0.1mm, 0.25mm, 0.5mm, 1.0mm, 1.25mm, 1.5mm or 2.0mm
+extractCallusStiffness = True
+kSpring = 5000.0 #N/mm
+IFM = 'case B'                                       #case A, case B, 0.0mm, 0.01mm, 0.1mm, 0.25mm, 0.5mm, 1.0mm, 1.25mm, 1.5mm or 2.0mm
 
-numberCPUs = 12
+numberCPUs = 16
 
 # EConnTiss = 3.0 #MPa                                #according to Simon et al.
 EConnTiss = 1.85 #MPa                                #according to Kraaij et al. (2014), Martin et al. (1998), used by Gomez-Benito et al. (2005)

@@ -52,3 +52,7 @@ resultsSheet.write(0,  7, 'periostealWovBoneConc')
 resultsSheet.write(0,  8, 'endostealSoftCartConc')
 resultsSheet.write(0,  9, 'endostealMnrlCartConc')
 resultsSheet.write(0, 10, 'endostealWovBoneConc')
+if extractCallusStiffness:
+    resultsSheet.write(0, 11, 'callusStiffnessCompression')
+    resultsSheet.write(0, 12, 'callusStiffnessBending')
+    resultsSheet.write(0, 13, 'callusStiffnessTorsion')

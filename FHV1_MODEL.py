@@ -252,75 +252,18 @@ if useLinearSpring:
 ###alternative to spring: nonlinear connector section
 else:
     myModel.ConnectorSection(name='ExtFixatorConnSect', translationalType=AXIAL)                                        #nonlinear spring defined as a connector
-    if IFM == '0.0mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -0.000001),
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '0.01mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -0.010001),
-                    ( 0.0       , -0.01    ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '0.1mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -0.100001),
-                    ( 0.0       , -0.1     ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-        # myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            # table=( (-1000.0    , -0.217391), 
-                    # ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == 'case A':
+    if IFM == 'case A':
         myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
             table=( (-1000.0    , -0.358696), 
                     (-102.83843 , -0.16366 ), 
                     (-100.0     , -0.021739), 
                     ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '0.5mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -1.500001),
-                    ( 0.0       , -1.5     ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-        # myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            # table=( (-1000.0    , -0.608696), 
-                    # (-107.8612  , -0.4148  ), 
-                    # (-100.0     , -0.021739), 
-                    # ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '1.0mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -1.000001),
-                    ( 0.0       , -1.0     ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-        # myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            # table=( (-1000.0    , -1.108696), 
-                    # (-117.9032  , -0.9169  ), 
-                    # (-100.0     , -0.021739), 
-                    # ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
     elif IFM == 'case B':
         myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
             table=( (-1000.0    , -1.358696), 
                     (-122.925767, -1.168027), 
                     (-100.0     , -0.021739), 
                     ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '1.5mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -1.500001),
-                    ( 0.0       , -1.5     ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-        # myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            # table=( (-1000.0    , -1.608696), 
-                    # (-127.9472  , -1.4191  ), 
-                    # (-100.0     , -0.021739), 
-                    # ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-    elif IFM == '2.0mm':
-        myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            table=( (-1000.0    , -2.000001),
-                    ( 0.0       , -2.0     ), 
-                    ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
-        # myModel.sections['ExtFixatorConnSect'].setValues(behaviorOptions=(ConnectorElasticity(behavior=NONLINEAR,
-            # table=( (-1000.0    , -2.108696), 
-                    # (-137.9913  , -1.9213  ), 
-                    # (-100.0     , -0.021739), 
-                    # ( 0.0       ,  0.0     )), independentComponents=(), components=(1, )), ))
     myModel.sections['ExtFixatorConnSect'].behaviorOptions[0].ConnectorOptions()
     myAssembly.WirePolyLine(mergeType=IMPRINT, meshable=False, points=((myAssembly.referencePoints[refPoint1.id], 
         myAssembly.sets['AttachPoint2Set'].vertices[0]), ))
@@ -329,7 +272,7 @@ else:
     myAssembly.SectionAssignment(region=myAssembly.sets['ExtFixatorWireSet'], sectionName='ExtFixatorConnSect')
 
 ###step
-myModel.StaticStep(name='LoadingStep', nlgeom=ON, previous='Initial')
+myModel.StaticStep(name='LoadingStep', nlgeom=ON, previous='Initial', minInc=1e-07)
 
 ###boundary conditions
 myModel.PinnedBC(createStepName='Initial', localCsys=None, name='BoneFixedBC', 
@@ -350,6 +293,6 @@ myModel.FieldOutputRequest(createStepName='LoadingStep', name='F-Output-1', reba
 
 ###history output
 myModel.HistoryOutputRequest(createStepName='LoadingStep', name='H-Output-1', frequency=LAST_INCREMENT, 
-    rebar=EXCLUDE, region=myAssembly.sets['AttachPoint2Set'], sectionPoints=DEFAULT, variables=('U2', ))
+    rebar=EXCLUDE, region=myAssembly.sets['AttachPoint2Set'], sectionPoints=DEFAULT, variables=('U1', 'U2', 'UR2'))
 
 del mdb.models['Model-1']

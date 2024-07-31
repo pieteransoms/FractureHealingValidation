@@ -14,6 +14,10 @@ print '--- Job ' + jobName + ' ran for ' + str(int(toc - tic)) + ' seconds'
 ###extract strains
 execfile(strainsFile)
 
+###extract callus stiffness
+if extractCallusStiffness:
+    execfile(callusStiffnessFile)
+
 ###fracture healing algorithm
 tic = time.clock()
 execfile(fractureHealingFile)
